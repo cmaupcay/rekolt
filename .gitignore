@@ -4,3 +4,4 @@ __pycache__
 racine.py
 rekolt.json
 dest
+*.part

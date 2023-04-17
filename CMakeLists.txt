@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project("tensaiji.rekolt" VERSION "0.1.0")
+project("tensaiji.rekolt" VERSION "0.1.1")
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 set(LIBRARY_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/bib")
@@ -12,7 +12,7 @@ if(NOT DEFINED REKOLT_FICHIER)
 	set(REKOLT_FICHIER "rekolt.json")
 endif()
 if(NOT DEFINED REKOLT_DESTINATION)
-	set(REKOLT_DESTINATION "dest")
+	set(REKOLT_DESTINATION "${CMAKE_CURRENT_LIST_DIR}/dest")
 endif()
 if(NOT DEFINED REKOLT_ENCODAGE)
 	set(REKOLT_ENCODAGE "utf-8")

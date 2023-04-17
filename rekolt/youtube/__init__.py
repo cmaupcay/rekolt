@@ -32,10 +32,6 @@ class RekoltYouTube:
                 {
                     "key": "FFmpegVideoConvertor",
                     "preferedformat": config.format(),
-                },
-                {
-                    "key": "ExecAfterDownload",
-                    "exec_cmd": "rm {}"
                 }
             ],
             "nooverwrites": True,
