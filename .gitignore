@@ -1,0 +1,6 @@
+cmake
+bin
+__pycache__
+racine.py
+rekolt.json
+dest

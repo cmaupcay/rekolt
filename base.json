@@ -1,0 +1,67 @@
+{
+    "projet": {
+        "nom": "rekolt",
+        "version": [
+            0,
+            1,
+            0
+        ],
+        "org": "tensaiji",
+        "description": "Utilitaire de collecte automatique de ressources.",
+        "url": "tensaiji/rekolt",
+        "profils": [
+            "resrc.cmake"
+        ],
+        "env": {
+            "README_PROJET": "€{PYTHON_PACKAGE}",
+            "PYTHON": "python",
+            "PYTHON_RACINE": "racine.py",
+            "PYTHON_PACKAGE": "€{BASE_PROJET_NOM}",
+            "PYTHON_PIP": "pip",
+            "CMAKE_PREFIX": "REKOLT_",
+            "RESSOURCE_GITIGNORE": [
+                "__pycache__",
+                "€{PYTHON_RACINE}",
+                "€{PYTHON_PACKAGE}.json",
+                "dest",
+                "*.part"
+            ],
+            "RESSOURCE_CMAKELISTS": {
+                "constantes": {
+                    "€{CMAKE_PREFIX}SRC": "${CMAKE_CURRENT_LIST_DIR}/€{PYTHON_PACKAGE}",
+                    "€{CMAKE_PREFIX}PACKAGE": "€{PYTHON_PACKAGE}",
+                    "€{CMAKE_PREFIX}RACINE": "${€{CMAKE_PREFIX}SRC}/€{PYTHON_RACINE}"
+                },
+                "variables": {
+                    "€{CMAKE_PREFIX}FICHIER": "€{PYTHON_PACKAGE}.json",
+                    "€{CMAKE_PREFIX}DESTINATION": "${CMAKE_CURRENT_LIST_DIR}/dest",
+                    "€{CMAKE_PREFIX}ENCODAGE": "utf-8"
+                },
+                "configs": [
+                    "${€{CMAKE_PREFIX}RACINE}"
+                ]
+            },
+            "RESSOURCE_MAKEFILE": {
+                "run": [
+                    [],
+                    "@-€{PYTHON} -m €{PYTHON_PACKAGE}"
+                ],
+                "clean.pycache": [
+                    [],
+                    "@-find . | grep -E \"__pycache__\" | xargs rm -rf"
+                ],
+                "clean.dest": [
+                    [],
+                    "@-rm -rf dest"
+                ],
+                "install": [
+                    [],
+                    "@-€{PYTHON_PIP} install --upgrade -r requirements.txt"
+                ]
+            },
+            "MAKE_ALL": "clean cmake run",
+            "MAKE_CLEAN": "clean.cmake clean.pycache"
+        }
+    },
+    "version": "0.27.3"
+}

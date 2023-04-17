@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.10)
+
+project("tensaiji.rekolt" VERSION "0.1.0")
+
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
+set(LIBRARY_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/bib")
+set(REKOLT_SRC "${CMAKE_CURRENT_LIST_DIR}/rekolt")
+set(REKOLT_PACKAGE "rekolt")
+set(REKOLT_RACINE "${REKOLT_SRC}/racine.py")
+
+if(NOT DEFINED REKOLT_FICHIER)
+	set(REKOLT_FICHIER "rekolt.json")
+endif()
+if(NOT DEFINED REKOLT_DESTINATION)
+	set(REKOLT_DESTINATION "dest")
+endif()
+if(NOT DEFINED REKOLT_ENCODAGE)
+	set(REKOLT_ENCODAGE "utf-8")
+endif()
+
+configure_file("${REKOLT_RACINE}.in" "${REKOLT_RACINE}")
