@@ -3,8 +3,8 @@
         "nom": "rekolt",
         "version": [
             0,
-            2,
-            1
+            3,
+            0
         ],
         "org": "tensaiji",
         "description": "Utilitaire de collecte automatique de ressources.",
@@ -24,7 +24,9 @@
                 "€{PYTHON_RACINE}",
                 "€{PYTHON_PACKAGE}.json",
                 "dest",
-                "*.part"
+                "*.part",
+                "*.mp*",
+                "*.mkv"
             ],
             "RESSOURCE_CMAKELISTS": {
                 "constantes": {
