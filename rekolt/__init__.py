@@ -19,7 +19,7 @@ def main() -> None :
             if (module.CONFIG in modules):
                 module.invoquer(config)
             else:
-                RekoltTerminal.erreur("Pas de configuration détectée.")
+                RekoltTerminal.erreur("Pas de configuration détectée pour le module.")
             RekoltTerminal.desindenter()
     except Exception as e:
         RekoltTerminal.retablir()

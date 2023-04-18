@@ -46,13 +46,14 @@ class RekoltYouTube:
 
     def __hook(self, infos: dict) -> None :
         status = infos['status']
+        fichier = infos['filename']
         if (status == 'downloading'):
-            fichier = infos['filename']
             if (fichier not in self.__fichiers):
                 RekoltTerminal.afficher("Téléchargement de '" + fichier + "'...")
                 self.__fichiers.append(fichier)
         elif (status == 'finished'):
-            self.__convertir(infos['filename'])
+            if (fichier in self.__fichiers):
+                self.__fichiers.remove(fichier)
 
     def invoquer(self, config: RekoltConfig) -> None :
         self.__config = config.creer(RekoltYouTubeConfig, RekoltYouTube.CONFIG)
