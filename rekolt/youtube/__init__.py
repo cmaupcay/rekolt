@@ -1,30 +1,29 @@
 from ..terminal import RekoltTerminal
-from .config import RekoltYouTubeConfig
+from .config import RekoltConfig, RekoltYouTubeConfig
 
 from youtube_dl import YoutubeDL
-import os
+from multiprocessing.dummy import Pool as ThreadPool
+import os, itertools
 
 class RekoltYouTube:
     NOM = "RekoltYouTube"
     CONFIG = "youtube"
 
-    # class Logger:
-    #     def debug(self, msg: str) -> None :
-    #         pass
+    def __init__(self) -> None:
+        self.__config = None
+        self.__fichiers = []
 
-    #     def warning(self, msg: str) -> None :
-    #         RekoltTerminal.afficher(msg)
+    class __Logger:
+        def debug(self, msg: str) -> None :
+            pass
 
-    #     def error(self, msg: str) -> None :
-    #         RekoltTerminal.erreur(msg)
+        def warning(self, msg: str) -> None :
+            RekoltTerminal.afficher(msg)
 
-    # __LOGGER = Logger()
+        def error(self, msg: str) -> None :
+            RekoltTerminal.erreur(msg)
 
-    # def __hook(infos: dict) -> None :
-    #     if (infos['status'] == 'finished'):
-    #         RekoltTerminal.afficher("Vidéo téléchargée (" + infos['filename'] + "). Conversion...")
-
-    def __options(destination: str, config: RekoltYouTubeConfig) -> dict :
+    def __options_telechargement(self, destination: str, config: RekoltYouTubeConfig) -> dict :
         return {
             "outtmpl": destination + os.path.sep + "%(title)s.%(ext)s",
             "format": "best[height<=" + str(config.qualite()) + "]",
@@ -36,12 +35,28 @@ class RekoltYouTube:
             ],
             "nooverwrites": True,
             "ignoreerrors": True,
-            # "progress_hooks": [RekoltYouTube.__hook],
-            # "logger": RekoltYouTube.__LOGGER
+            "progress_hooks": [self.__hook],
+            "logger": RekoltYouTube.__Logger()
         }
 
-    def invoquer(destination: str, config: dict) -> None :
-        config = RekoltYouTubeConfig(config)
-        dl = YoutubeDL(RekoltYouTube.__options(destination, config))
-        RekoltTerminal.afficher("Téléchargement depuis " + str(len(config.playlists())) + " playlist(s)...")
-        dl.download(config.playlists())
+    def __telecharger(self, url: str, options: dict) -> None :
+        RekoltTerminal.afficher("Téléchargement depuis '" + str(url) + "'...")
+        dl = YoutubeDL(options)
+        dl.download([url])
+
+    def __hook(self, infos: dict) -> None :
+        status = infos['status']
+        if (status == 'downloading'):
+            fichier = infos['filename']
+            if (fichier not in self.__fichiers):
+                RekoltTerminal.afficher("Téléchargement de '" + fichier + "'...")
+                self.__fichiers.append(fichier)
+        elif (status == 'finished'):
+            self.__convertir(infos['filename'])
+
+    def invoquer(self, config: RekoltConfig) -> None :
+        self.__config = config.creer(RekoltYouTubeConfig, RekoltYouTube.CONFIG)
+        options = self.__options_telechargement(config.destination(), self.__config)
+        pool = ThreadPool(self.__config.processus())
+        pool.starmap(self.__telecharger, zip(self.__config.urls(), itertools.repeat(options)))
+        pool.close()

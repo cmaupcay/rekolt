@@ -1,5 +1,7 @@
+from ..config import RekoltConfig
+
 class RekoltYouTubeConfig:
-    PLAYLISTS = "playlists"
+    URLS = "urls"
 
     FORMAT = "format"
     FORMAT_PAR_DEFAUT = "mkv"
@@ -7,8 +9,11 @@ class RekoltYouTubeConfig:
     QUALITE = "qualite"
     QUALITE_PAR_DEFAUT = 1080
 
-    def __init__(self, config: dict) -> None:
-        self.__playlists = set(config[RekoltYouTubeConfig.PLAYLISTS])
+    PROCESSUS = "processus"
+    PROCESSUS_PAR_DEFAUT = 4
+
+    def __init__(self, config: RekoltConfig) -> None:
+        self.__urls = set(config[RekoltYouTubeConfig.URLS])
         # FORMAT
         if (RekoltYouTubeConfig.FORMAT in config.keys()):
             self.__format = int(config[RekoltYouTubeConfig.FORMAT])
@@ -19,12 +24,20 @@ class RekoltYouTubeConfig:
             self.__qualite = int(config[RekoltYouTubeConfig.QUALITE])
         else:
             self.__qualite = RekoltYouTubeConfig.QUALITE_PAR_DEFAUT
+        # PROCESSUS
+        if (RekoltYouTubeConfig.PROCESSUS in config.keys()):
+            self.__processus = int(config[RekoltYouTubeConfig.PROCESSUS])
+        else:
+            self.__processus = RekoltYouTubeConfig.PROCESSUS_PAR_DEFAUT
 
-    def playlists(self) -> set[str] :
-        return self.__playlists
+    def urls(self) -> set[str] :
+        return self.__urls
     
     def format(self) -> str :
         return self.__format
     
     def qualite(self) -> int :
         return self.__qualite
+    
+    def processus(self) -> int :
+        return self.__processus

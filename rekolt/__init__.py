@@ -5,19 +5,19 @@ from .terminal import RekoltTerminal
 from .youtube import RekoltYouTube
 
 __MODULES = [
-    RekoltYouTube
+    RekoltYouTube()
 ]
 
 def main() -> None :
     try:
         RekoltTerminal.afficher("Extraction de la configuration...")
         config = RekoltConfig.extraire()
-        configs = config.keys()
+        modules = config.modules()
         for module in __MODULES:
             RekoltTerminal.afficher("Module : " + module.NOM)
             RekoltTerminal.indenter()
-            if (module.CONFIG in configs):
-                module.invoquer(Rekolt.DESTINATION, config[module.CONFIG])
+            if (module.CONFIG in modules):
+                module.invoquer(config)
             else:
                 RekoltTerminal.erreur("Pas de configuration détectée.")
             RekoltTerminal.desindenter()
