@@ -3,7 +3,7 @@ from ..modules import RekoltModule, RekoltConfig
 from .config import RekoltYouTubeConfig
 
 from youtube_dl import YoutubeDL
-from threading import current_thread
+from threading import current_thread, Thread
 from multiprocessing.dummy import Pool
 import os, itertools
 
@@ -29,10 +29,14 @@ class RekoltYouTube(RekoltModule):
 
     def __telecharger(self, url: str, options: dict) -> None :
         url = str(url)
-        current_thread().setName(self.nouveau_nom_thread(url))
+        nom = self.nouveau_nom_thread(url)
+        current_thread().setName(nom)
         RekoltTerminal.afficher("Téléchargement depuis '" + url + "'...")
         try:
-            YoutubeDL(options).download([url])
+            dl = YoutubeDL(options)
+            thread = Thread(name=nom, target=dl.download, args=zip([url]))
+            thread.start()
+            thread.join(self.config().timeout())
         except Exception as e:
             RekoltTerminal.erreur(e)
 

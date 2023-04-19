@@ -12,6 +12,9 @@ class RekoltYouTubeConfig:
     PROCESSUS = "processus"
     PROCESSUS_PAR_DEFAUT = 2
 
+    TIMEOUT = "timeout"
+    TIMEOUT_PAR_DEFAUT = 1200;
+
     def __init__(self, config: RekoltConfig) -> None:
         self.__urls = set(config[RekoltYouTubeConfig.URLS])
         params = config.keys()
@@ -30,6 +33,11 @@ class RekoltYouTubeConfig:
             self.__processus = int(config[RekoltYouTubeConfig.PROCESSUS])
         else:
             self.__processus = RekoltYouTubeConfig.PROCESSUS_PAR_DEFAUT
+        # TIMEOUT
+        if (RekoltYouTubeConfig.TIMEOUT in params):
+            self.__timeout = int(config[RekoltYouTubeConfig.TIMEOUT])
+        else:
+            self.__timeout = RekoltYouTubeConfig.TIMEOUT_PAR_DEFAUT
 
     def urls(self) -> set[str] :
         return self.__urls
@@ -42,3 +50,6 @@ class RekoltYouTubeConfig:
     
     def processus(self) -> int :
         return self.__processus
+    
+    def timeout(self) -> int :
+        return self.__timeout

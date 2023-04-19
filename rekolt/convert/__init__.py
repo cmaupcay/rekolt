@@ -13,13 +13,18 @@ class RekoltConvert(RekoltModule):
         super().__init__("convert", RekoltConvertConfig, modules)
         self.__attendre = False
         self.__fichiers = Queue()
+        self.__destination = None
 
     def __convertir(self, source: str) -> None :
-        destination = os.path.splitext(source)[0] + '.' + self.config().format()
+        destination = self.__destination + os.path.splitext(os.path.basename(source))[0]
+        ext = '.' + self.config().format()
+        tmp = destination + self.config().tmp() + ext
+        destination += ext
         RekoltTerminal.afficher("Conversion de '" + str(source) + "' vers '" + destination + "'...")
         try:
             video = VideoFileClip(source)
-            video.write_videofile(destination, codec=self.config().codec(), threads=self.config().processus(), logger=None)
+            video.write_videofile(tmp, codec=self.config().codec(), threads=self.config().processus(), logger=None)
+            os.rename(tmp, destination)
             video.close()
             if (self.config().supprimer_sources() and os.path.isfile(destination)):
                 RekoltTerminal.afficher("Suppression de la source '" + str(source) + "'...")
@@ -36,15 +41,19 @@ class RekoltConvert(RekoltModule):
     def convertir(self, fichier: str) -> None :
         self.__fichiers.put(fichier)
 
+    def __ciblage(self, dossier: str) -> None :
+        if (type(self.config().cible()) == str):
+            cible = dossier + os.path.sep + self.config().cible() + os.path.sep
+            if (os.path.isdir(cible)):
+                RekoltTerminal.afficher("Chargement des éléments depuis '" + cible + "'...")
+                for video in os.listdir(cible):
+                    self.__fichiers.put(cible + video)
+
     def invoquer(self, config: RekoltConfig) -> None :
         super().invoquer(config)
-        if (type(self.config().cible()) == str):
-            destination = config.destination() + os.path.sep + self.config().cible()
-            if (os.path.isdir(destination)):
-                RekoltTerminal.afficher("Chargement des éléments depuis '" + destination + "'...")
-                for video in os.listdir(destination):
-                    self.__fichiers.put(video)
+        self.__ciblage(config.destination())
         RekoltTerminal.afficher("Démarrage...")
+        self.__destination = config.destination() + os.path.sep + self.config().dossier() + os.path.sep
         self.__attendre = True
         while (self.__attendre or self.__fichiers.qsize() > 0):
             try:

@@ -1,3 +1,4 @@
+from ..racine import Rekolt
 from ..config import RekoltConfig
 
 class RekoltConvertConfig:
@@ -12,6 +13,9 @@ class RekoltConvertConfig:
 
     DOSSIER = "dossier"
     DOSSIER_PAR_DEFAUT = ""
+
+    TMP = "tmp"
+    TMP_PAR_DEFAUT = '.' + Rekolt.NOM
 
     PROCESSUS = "processus"
     PROCESSUS_PAR_DEFAUT = 8
@@ -37,6 +41,11 @@ class RekoltConvertConfig:
             self.__dossier = str(config[RekoltConvertConfig.DOSSIER])
         else:
             self.__dossier = RekoltConvertConfig.DOSSIER_PAR_DEFAUT
+        # TMP
+        if (RekoltConvertConfig.TMP in params):
+            self.__tmp = str(config[RekoltConvertConfig.TMP])
+        else:
+            self.__tmp = RekoltConvertConfig.TMP_PAR_DEFAUT
         # PROCESSUS
         if (RekoltConvertConfig.PROCESSUS in params):
             self.__processus = int(config[RekoltConvertConfig.PROCESSUS])
@@ -59,6 +68,9 @@ class RekoltConvertConfig:
     
     def dossier(self) -> str :
         return self.__dossier
+    
+    def tmp(self) -> str :
+        return self.__tmp
 
     def processus(self) -> int :
         return self.__processus
