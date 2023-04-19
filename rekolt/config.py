@@ -19,8 +19,8 @@ class RekoltConfig:
     def modules(self) -> set[str] :
         return set(self.__config.keys())
     
-    def creer(self, config, champs: str | None = None):
-        return config(self.__config if champs == None else self.__config[champs])
+    def creer(self, config: type, champs: str | None = None):
+        return config(self.__config if champs == None else (self.__config[champs] if champs in self.__config.keys() else {}))
 
     def extraire(fichier = Rekolt.FICHIER):
         flux = open(fichier, 'r', encoding=Rekolt.ENCODAGE)
