@@ -42,6 +42,7 @@ class RekoltYouTube(RekoltModule):
 
     def __hook(self, infos: dict) -> None :
         if (infos['status'] == 'finished'):
+            RekoltTerminal.afficher("Téléchargement terminé.")
             self.modules()['convert'].convertir(infos['filename'])
 
     def invoquer(self, config: RekoltConfig) -> None :
