@@ -13,7 +13,7 @@ class RekoltYouTube(RekoltModule):
 
     def __options(self, destination: str) -> dict :
         return {
-            "outtmpl": destination + os.path.sep + "%(title)s.%(ext)s",
+            "outtmpl": destination + os.path.sep + self.config().dossier() + os.path.sep + "%(title)s.%(ext)s",
             "format": "best[height<=" + str(self.config().qualite()) + "]",
             "nooverwrites": True,
             "ignoreerrors": True,

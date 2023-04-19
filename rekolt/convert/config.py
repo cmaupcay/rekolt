@@ -1,11 +1,17 @@
 from ..config import RekoltConfig
 
 class RekoltConvertConfig:
+    CIBLE = "cible"
+    CIBLE_PAR_DEFAUT = None
+
     FORMAT = "format"
     FORMAT_PAR_DEFAUT = "mkv"
     __FORMAT_CODECS = {
         "mkv": "libx264"
     }
+
+    DOSSIER = "dossier"
+    DOSSIER_PAR_DEFAUT = ""
 
     PROCESSUS = "processus"
     PROCESSUS_PAR_DEFAUT = 8
@@ -15,12 +21,22 @@ class RekoltConvertConfig:
 
     def __init__(self, config: RekoltConfig) -> None:
         params = config.keys()
+        # CIBLE
+        if (RekoltConvertConfig.CIBLE in params):
+            self.__cible = str(config[RekoltConvertConfig.CIBLE])
+        else:
+            self.__cible = RekoltConvertConfig.CIBLE_PAR_DEFAUT
         # FORMAT
         if (RekoltConvertConfig.FORMAT in params):
             self.__format = int(config[RekoltConvertConfig.FORMAT])
         else:
             self.__format = RekoltConvertConfig.FORMAT_PAR_DEFAUT
         self.__codec = RekoltConvertConfig.__FORMAT_CODECS[self.__format]
+        # DOSSIER
+        if (RekoltConvertConfig.DOSSIER in params):
+            self.__dossier = str(config[RekoltConvertConfig.DOSSIER])
+        else:
+            self.__dossier = RekoltConvertConfig.DOSSIER_PAR_DEFAUT
         # PROCESSUS
         if (RekoltConvertConfig.PROCESSUS in params):
             self.__processus = int(config[RekoltConvertConfig.PROCESSUS])
@@ -32,12 +48,18 @@ class RekoltConvertConfig:
         else:
             self.__supprimer_sources = RekoltConvertConfig.SUPPRIMER_SOURCES_PAR_DEFAUT
 
+    def cible(self) -> str | None :
+        return self.__cible
+
     def format(self) -> str :
         return self.__format
     
     def codec(self) -> str :
         return self.__codec
     
+    def dossier(self) -> str :
+        return self.__dossier
+
     def processus(self) -> int :
         return self.__processus
     
