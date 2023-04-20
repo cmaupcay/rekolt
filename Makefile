@@ -45,3 +45,11 @@ install:
 	@-pip install --upgrade -r requirements.txt
 .PHONY : install
 
+maj.git: 
+	@-git pull
+.PHONY : maj.git
+
+maj: maj.git clean cmake
+
+.PHONY : maj
+

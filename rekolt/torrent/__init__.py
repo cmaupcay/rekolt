@@ -47,7 +47,7 @@ class RekoltTorrent(RekoltModule):
             RekoltTerminal.afficher("Téléchargement du torrent '" + torrent + "' vers '" + destination + "'...")
         try:
             dl = TorrentDownloader(torrent, destination)
-            thread = Thread(name=nom, target=self.__telecharger, args=zip(dl))
+            thread = Thread(name=nom, target=self.__telecharger, args=(dl))
             thread.start()
             thread.join(self.config().timeout())
             RekoltTerminal.afficher("Téléchargement terminé.")
