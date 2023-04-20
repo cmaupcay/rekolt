@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project("tensaiji.rekolt" VERSION "0.8.1")
+project("tensaiji.rekolt" VERSION "0.9.0")
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 set(LIBRARY_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/bib")

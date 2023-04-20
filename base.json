@@ -3,8 +3,8 @@
         "nom": "rekolt",
         "version": [
             0,
-            8,
-            1
+            9,
+            0
         ],
         "org": "tensaiji",
         "description": "Utilitaire de collecte automatique de ressources.",

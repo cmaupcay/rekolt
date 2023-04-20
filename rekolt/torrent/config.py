@@ -19,6 +19,9 @@ class RekoltTorrentConfig:
     CONVERSION = "conversion"
     CONVERSION_PAR_DEFAUT = False
 
+    SUPPRIMER_SOURCES = "supprimer_sources"
+    SUPPRIMER_SOURCES_PAR_DEFAUT = True
+
     def __init__(self, config: RekoltConfig) -> None:
         params = config.keys()
         # CIBLE
@@ -51,6 +54,11 @@ class RekoltTorrentConfig:
             self.__conversion = bool(config[RekoltTorrentConfig.CONVERSION])
         else:
             self.__conversion = RekoltTorrentConfig.CONVERSION_PAR_DEFAUT
+        # SUPPRESSION SOURCES
+        if (RekoltTorrentConfig.SUPPRIMER_SOURCES in params):
+            self.__supprimer_sources = bool(config[RekoltTorrentConfig.SUPPRIMER_SOURCES])
+        else:
+            self.__supprimer_sources = RekoltTorrentConfig.SUPPRIMER_SOURCES_PAR_DEFAUT
 
     def cible(self) -> str :
         return self.__cible
@@ -69,3 +77,6 @@ class RekoltTorrentConfig:
     
     def conversion(self) -> bool :
         return self.__conversion
+    
+    def supprimer_sources(self) -> bool :
+        return self.__supprimer_sources

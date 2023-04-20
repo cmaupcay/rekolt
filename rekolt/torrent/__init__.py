@@ -46,6 +46,9 @@ class RekoltTorrent(RekoltModule):
                 with NoPrint():
                     dl.start_download()
             RekoltTerminal.afficher("Téléchargement terminé.")
+            if (not magnet and self.config().supprimer_sources()):
+                RekoltTerminal.afficher("Suppression du fichier torrent '" + torrent + "'...")
+                os.remove(torrent)
             if (self.config().conversion()):
                 RekoltModule.modules()[RekoltConvert.NOM].convertir(destination)
         except Exception as e:
