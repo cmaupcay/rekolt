@@ -1,17 +1,18 @@
 from .racine import Rekolt
 from .config import RekoltConfig
 from .terminal import RekoltTerminal
+from .modules import RekoltModule
 
 from .convert import RekoltConvert
 from .youtube import RekoltYouTube
+from .torrent import RekoltTorrent
 
 from threading import current_thread, Thread
 
-__MODULES = []
-
 def __init() -> None :
-    __MODULES.append(RekoltConvert(__MODULES))
-    __MODULES.append(RekoltYouTube(__MODULES))
+    RekoltModule.ajouter_module(RekoltYouTube())
+    RekoltModule.ajouter_module(RekoltTorrent())
+    RekoltModule.ajouter_module(RekoltConvert())
 
 def main() -> None :
     current_thread().setName(Rekolt.NOM)
@@ -20,8 +21,9 @@ def main() -> None :
     try:
         RekoltTerminal.afficher("Extraction de la configuration...")
         config = RekoltConfig.extraire()
+        modules = RekoltModule.modules().values()
         modules_threads = []
-        for module in __MODULES:
+        for module in modules:
             thread = Thread(name=Rekolt.NOM + '.' + module.nom(), target=module.invoquer, args=(config,))
             thread.start()
             modules_threads.append(thread)

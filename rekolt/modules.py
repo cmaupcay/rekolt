@@ -3,12 +3,11 @@ from .config import RekoltConfig
 from threading import current_thread
 
 class RekoltModule:
-    def __init__(self, nom: str, configClass: type, modules: list) -> None:
+    __MODULES = {}
+
+    def __init__(self, nom: str, configClass: type) -> None:
         self.__nom = nom
         self.__configClass = configClass
-        self.__modules = {}
-        for module in modules:
-            self.__modules[module.nom()] = module
         self.__config = None
         self.__thread_prefix = None
 
@@ -22,8 +21,11 @@ class RekoltModule:
     def config(self):
         return self.__config
     
-    def modules(self) -> dict :
-        return self.__modules
+    def modules() -> dict :
+        return RekoltModule.__MODULES
+
+    def ajouter_module(module) -> None :
+        RekoltModule.__MODULES[module.nom()] = module
     
-    def nouveau_nom_thread(self, nom: str) -> str :
+    def nouveau_thread(self, nom: str) -> str :
         return self.__thread_prefix + nom

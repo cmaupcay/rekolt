@@ -7,11 +7,14 @@ from queue import Queue, Empty
 import os
 
 class RekoltConvert(RekoltModule):
+    NOM = "convert"
+
+    __AUDIO_EXT = "mp3"
     __TIMEOUT = 1
 
-    def __init__(self, modules: dict) -> None:
-        super().__init__("convert", RekoltConvertConfig, modules)
-        self.__attendre = False
+    def __init__(self) -> None:
+        super().__init__(RekoltConvert.NOM, RekoltConvertConfig)
+        self.__consommateurs = 0
         self.__en_attente = Queue()
         self.__en_cours = None
         self.__destination = None
@@ -20,7 +23,7 @@ class RekoltConvert(RekoltModule):
         self.__en_cours = source
         destination = os.path.splitext(os.path.basename(source))[0] + '.'
         tmp = self.__destination + self.config().tmp() + destination
-        tmp_audio = tmp + "mp3"
+        tmp_audio = tmp + RekoltConvert.__AUDIO_EXT
         tmp += self.config().format()
         destination = self.__destination + destination + self.config().format()
         RekoltTerminal.afficher("Conversion de '" + str(source) + "' vers '" + destination + "'...")
@@ -42,17 +45,24 @@ class RekoltConvert(RekoltModule):
             RekoltTerminal.erreur(e)
         self.__en_cours = None
 
-    def attend(self) -> bool :
-        return self.__attendre
-    
-    def ne_plus_attendre(self) -> None :
-        self.__attendre = False
+    def debut_consommation(self) -> None :
+        self.__consommateurs += 1
 
-    def convertir(self, fichier: str) -> None :
-        if (fichier == self.__en_cours or fichier in self.__en_attente.queue):
-            RekoltTerminal.erreur("Le fichier '" + fichier + "' est déjà en cours ou en attente de traitement.")
+    def fin_consommation(self) -> None :
+        self.__consommateurs -= 1
+
+    def convertir(self, cible: str) -> None :
+        if (cible == self.__en_cours or cible in self.__en_attente.queue):
+            RekoltTerminal.erreur("Le fichier '" + cible + "' est déjà en cours ou en attente de traitement.")
         else:
-            self.__en_attente.put(fichier)
+            if (os.path.isdir(cible)):
+                for fichier in os.listdir(cible):
+                    self.convertir(cible + os.path.sep + fichier)
+            elif (os.path.isfile(cible)):
+                if (os.path.splitext(cible)[-1][1:] not in self.config().ignore()):
+                    self.__en_attente.put(cible)
+            else:
+                RekoltTerminal.erreur("Le fichier '" + cible + "' n'existe pas.")
 
     def __ciblage(self, dossier: str) -> None :
         if (type(self.config().cible()) == str):
@@ -60,17 +70,16 @@ class RekoltConvert(RekoltModule):
             if (os.path.isdir(cible)):
                 RekoltTerminal.afficher("Chargement des éléments depuis '" + cible + "'...")
                 for video in os.listdir(cible):
-                    if (os.path.splitext(video)[-1][1:] not in self.config().ignore()):
-                        self.convertir(cible + video)
+                    self.convertir(cible + video)
 
     def invoquer(self, config: RekoltConfig) -> None :
         super().invoquer(config)
         self.__ciblage(config.destination())
         RekoltTerminal.afficher("Démarrage...")
         self.__destination = config.destination() + os.path.sep + self.config().dossier() + os.path.sep
-        self.__attendre = True
-        while (self.__attendre or self.__en_attente.qsize() > 0):
+        while (self.__consommateurs > 0 or self.__en_attente.qsize() > 0):
             try:
                 self.__convertir(self.__en_attente.get(timeout=RekoltConvert.__TIMEOUT))
             except Empty:
                 pass
+        RekoltTerminal.afficher("Travail terminé.")

@@ -5,7 +5,10 @@ class RekoltConvertConfig:
     CIBLE_PAR_DEFAUT = None
 
     IGNORE = "ignore"
-    IGNORE_PAR_DEFAUT = {"part"}
+    IGNORE_PAR_DEFAUT = {"part", "txt", "nfo"}
+
+    IGNORE_FORMAT = "ignore_format"
+    IGNORE_FORMAT_PAR_DEFAUT = True
 
     FORMAT = "format"
     FORMAT_PAR_DEFAUT = "mkv"
@@ -46,6 +49,13 @@ class RekoltConvertConfig:
         else:
             self.__format = RekoltConvertConfig.FORMAT_PAR_DEFAUT
         self.__codec = RekoltConvertConfig.__FORMAT_CODECS[self.__format]
+        # IGNORE FORMAT
+        if (RekoltConvertConfig.IGNORE_FORMAT in params):
+            self.__ignore_format = bool(config[RekoltConvertConfig.IGNORE_FORMAT])
+        else:
+            self.__ignore_format = RekoltConvertConfig.IGNORE_FORMAT_PAR_DEFAUT
+        if (self.__ignore_format):
+            self.__ignore.add(self.__format)
         # DOSSIER
         if (RekoltConvertConfig.DOSSIER in params):
             self.__dossier = str(config[RekoltConvertConfig.DOSSIER])
@@ -77,6 +87,9 @@ class RekoltConvertConfig:
     
     def ignore(self) -> set[str] :
         return self.__ignore
+    
+    def ignore_format(self) -> bool :
+        return self.__ignore_format
 
     def format(self) -> str :
         return self.__format
