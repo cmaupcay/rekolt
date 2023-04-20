@@ -5,7 +5,7 @@ class RekoltConvertConfig:
     CIBLE_PAR_DEFAUT = None
 
     IGNORE = "ignore"
-    IGNORE_PAR_DEFAUT = {"part", "txt", "nfo"}
+    IGNORE_PAR_DEFAUT = {"part", "txt", "nfo", "torrent"}
 
     IGNORE_FORMAT = "ignore_format"
     IGNORE_FORMAT_PAR_DEFAUT = True

@@ -33,6 +33,11 @@ run:
 	@-python -m rekolt
 .PHONY : run
 
+maj.git:
+	@-git pull
+
+maj: maj.git clean make
+
 clean.pycache: 
 	@-find . | grep -E "__pycache__" | xargs rm -rf
 .PHONY : clean.pycache
