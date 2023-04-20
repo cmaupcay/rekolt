@@ -18,7 +18,7 @@ class RekoltYouTube(RekoltModule):
             "nooverwrites": True,
             "ignoreerrors": True,
             "progress_hooks": [self.__hook],
-            "logger": RekoltYouTube.__Logger()
+            "logger": (None if self.config().progression() else RekoltYouTube.__Logger())
         }
 
     def __collecter(self, url: str, options: dict) -> list[str] :

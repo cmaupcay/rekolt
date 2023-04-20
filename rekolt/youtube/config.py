@@ -12,6 +12,9 @@ class RekoltYouTubeConfig:
     PROCESSUS = "processus"
     PROCESSUS_PAR_DEFAUT = 2
 
+    PROGRESSION = "progression"
+    PROGRESSION_PAR_DEFAUT = False
+
     TIMEOUT = "timeout"
     TIMEOUT_PAR_DEFAUT = 1200;
 
@@ -33,6 +36,11 @@ class RekoltYouTubeConfig:
             self.__processus = int(config[RekoltYouTubeConfig.PROCESSUS])
         else:
             self.__processus = RekoltYouTubeConfig.PROCESSUS_PAR_DEFAUT
+        # PROGRESSION
+        if (RekoltYouTubeConfig.PROGRESSION in params):
+            self.__progression = bool(config[RekoltYouTubeConfig.PROGRESSION])
+        else:
+            self.__progression = RekoltYouTubeConfig.PROGRESSION_PAR_DEFAUT
         # TIMEOUT
         if (RekoltYouTubeConfig.TIMEOUT in params):
             self.__timeout = int(config[RekoltYouTubeConfig.TIMEOUT])
@@ -50,6 +58,9 @@ class RekoltYouTubeConfig:
     
     def processus(self) -> int :
         return self.__processus
+    
+    def progression(self) -> bool :
+        return self.__progression
     
     def timeout(self) -> int :
         return self.__timeout
