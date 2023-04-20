@@ -1,18 +1,18 @@
-from .config import RekoltConfig
+from .config import Rekolt, RekoltConfig
 
 from threading import current_thread, Thread
 
 class RekoltModule(Thread):
     def __init__(self, nom: str, configClass: type, config: RekoltConfig, modules: dict) -> None:
         self.__nom = str(nom)
-        self.__thread_prefix = nom + '.'
+        self.__thread_prefix = Rekolt.NOM + '.' + nom + '.'
         self.__config = config.creer(configClass, self.__nom)
         self.__config_globale = config
         self.__modules = modules
         super().__init__(target=self.invoquer)
 
     def invoquer(self) -> None :
-        current_thread().setName(self.__nom)
+        current_thread().setName(Rekolt.NOM + '.' + self.__nom)
 
     def nom(self) -> str :
         return self.__nom
