@@ -1,19 +1,18 @@
 from .config import RekoltConfig
 
-from threading import current_thread
+from threading import current_thread, Thread
 
-class RekoltModule:
-    __MODULES = {}
+class RekoltModule(Thread):
+    def __init__(self, nom: str, configClass: type, config: RekoltConfig, modules: dict) -> None:
+        self.__nom = str(nom)
+        self.__thread_prefix = nom + '.'
+        self.__config = config.creer(configClass, self.__nom)
+        self.__config_globale = config
+        self.__modules = modules
+        super().__init__(target=self.invoquer)
 
-    def __init__(self, nom: str, configClass: type) -> None:
-        self.__nom = nom
-        self.__configClass = configClass
-        self.__config = None
-        self.__thread_prefix = None
-
-    def invoquer(self, config: RekoltConfig) -> None :
-        self.__config = config.creer(self.__configClass, self.__nom)
-        self.__thread_prefix = current_thread().getName() + '.'
+    def invoquer(self) -> None :
+        current_thread().setName(self.__nom)
 
     def nom(self) -> str :
         return self.__nom
@@ -21,11 +20,14 @@ class RekoltModule:
     def config(self):
         return self.__config
     
-    def modules() -> dict :
-        return RekoltModule.__MODULES
-
-    def ajouter_module(module) -> None :
-        RekoltModule.__MODULES[module.nom()] = module
+    def config_globale(self):
+        return self.__config_globale
     
-    def nouveau_thread(self, nom: str) -> str :
+    def modules(self) -> dict :
+        return self.__modules
+    
+    def nom_thread(self, nom: str) -> str :
         return self.__thread_prefix + nom
+
+    def nouveau_thread(self, nom: str, cible: callable, *args) -> Thread :
+        return Thread(name=self.nom_thread(nom), target=cible, args=args)

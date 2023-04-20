@@ -12,8 +12,8 @@ class RekoltConvert(RekoltModule):
     __AUDIO_EXT = "mp3"
     __TIMEOUT = 1
 
-    def __init__(self) -> None:
-        super().__init__(RekoltConvert.NOM, RekoltConvertConfig)
+    def __init__(self, config: RekoltConfig, modules: dict[str, RekoltModule]) -> None:
+        super().__init__(RekoltConvert.NOM, RekoltConvertConfig, config, modules)
         self.__consommateurs = 0
         self.__en_attente = Queue()
         self.__en_cours = None
@@ -65,18 +65,18 @@ class RekoltConvert(RekoltModule):
                 RekoltTerminal.erreur("Le fichier '" + cible + "' n'existe pas.")
 
     def __ciblage(self, dossier: str) -> None :
-        if (type(self.config().cible()) == str):
+        if (len(self.config().cible()) > 0):
             cible = dossier + os.path.sep + self.config().cible() + os.path.sep
             if (os.path.isdir(cible)):
                 RekoltTerminal.afficher("Chargement des éléments depuis '" + cible + "'...")
                 for video in os.listdir(cible):
                     self.convertir(cible + video)
 
-    def invoquer(self, config: RekoltConfig) -> None :
-        super().invoquer(config)
-        self.__ciblage(config.destination())
+    def invoquer(self) -> None :
+        super().invoquer()
+        self.__ciblage(self.config_globale().destination())
         RekoltTerminal.afficher("Démarrage...")
-        self.__destination = config.destination() + os.path.sep + self.config().dossier() + os.path.sep
+        self.__destination = self.config_globale().destination() + os.path.sep + self.config().dossier() + os.path.sep
         while (self.__consommateurs > 0 or self.__en_attente.qsize() > 0):
             try:
                 self.__convertir(self.__en_attente.get(timeout=RekoltConvert.__TIMEOUT))

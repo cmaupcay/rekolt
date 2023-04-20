@@ -15,8 +15,8 @@ class RekoltTorrent(RekoltModule):
     __TORRENT = ".torrent"
     __MAGNET = "magnet:"
 
-    def __init__(self) -> None:
-        super().__init__(RekoltTorrent.NOM, RekoltTorrentConfig)
+    def __init__(self, config: RekoltConfig, modules: dict[str, RekoltModule]) -> None:
+        super().__init__(RekoltTorrent.NOM, RekoltTorrentConfig, config, modules)
 
     def __collecter(self, cible: str) -> list[str] :
         torrents = self.config().magnets()
@@ -37,8 +37,8 @@ class RekoltTorrent(RekoltModule):
     def __telecharger(self, torrent: str, destination: str) -> None :
         torrent = str(torrent)
         magnet = torrent.startswith(RekoltTorrent.__MAGNET)
-        nom = self.nouveau_thread("magnet" if magnet else "fichier")
-        current_thread().setName(nom)
+        nom = "magnet" if magnet else "fichier"
+        current_thread().setName(self.nom_thread(nom))
         destination = destination + os.path.sep
         if (magnet):
             RekoltTerminal.afficher("Téléchargement du torrent depuis le lien magnet vers '" + destination + "'...")
@@ -47,9 +47,9 @@ class RekoltTorrent(RekoltModule):
             RekoltTerminal.afficher("Téléchargement du torrent '" + torrent + "' vers '" + destination + "'...")
         try:
             dl = TorrentDownloader(torrent, destination)
-            thread = Thread(name=nom, target=self.__telechargement, args=[dl])
+            thread = self.nouveau_thread(nom, self.__telechargement, dl)
             thread.start()
-            thread.join(self.config().timeout())
+            thread.join(self.config().delais())
             if (thread.is_alive()):
                 raise TimeoutError("Délais dépassé : " + torrent)
             RekoltTerminal.afficher("Téléchargement terminé.")
@@ -57,21 +57,21 @@ class RekoltTorrent(RekoltModule):
                 RekoltTerminal.afficher("Suppression du fichier torrent '" + torrent + "'...")
                 os.remove(torrent)
             if (self.config().conversion()):
-                RekoltModule.modules()[RekoltConvert.NOM].convertir(destination)
+                self.modules()[RekoltConvert.NOM].convertir(destination)
         except Exception as e:
             RekoltTerminal.erreur(e)
 
-    def invoquer(self, config: RekoltConfig) -> None :
-        super().invoquer(config)
+    def invoquer(self) -> None :
+        super().invoquer()
         if (self.config().conversion()):
-            RekoltModule.modules()[RekoltConvert.NOM].debut_consommation()
-        cible = config.destination() + os.path.sep + self.config().cible()
+            self.modules()[RekoltConvert.NOM].debut_consommation()
+        cible = self.config_globale().destination() + os.path.sep + self.config().cible()
         torrents = self.__collecter(cible)
-        iter_destination = itertools.repeat(config.destination() + os.path.sep + self.config().dossier())
+        iter_destination = itertools.repeat(self.config_globale().destination() + os.path.sep + self.config().dossier())
         pool = Pool(self.config().processus())
         pool.starmap_async(self.__telecharger, zip(torrents, iter_destination))
         pool.close()
         pool.join()
         RekoltTerminal.afficher("Travail terminé.")
         if (self.config().conversion()):
-            RekoltModule.modules()[RekoltConvert.NOM].fin_consommation()
+            self.modules()[RekoltConvert.NOM].fin_consommation()

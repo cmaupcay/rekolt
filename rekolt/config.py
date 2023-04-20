@@ -2,20 +2,50 @@ from .racine import Rekolt
 
 import json
 
-class RekoltConfig:
+class RekoltConfigPrototype:
+    def __init__(self, config: dict[str, any]) -> None:
+        description = self.description()
+        defs = config.keys()
+        for param in description:
+            param_t = type(description[param])
+            val = None
+            if (param in defs):
+                if (param_t == type):
+                    param_t = description[param]
+                val = param_t(config[param])
+                config.pop(param)
+            elif (param_t == type):
+                raise ValueError(param)
+            else:
+                val = description[param]
+            self.__setattr__("_" + param, val)
+
+    def description(self) -> dict[str, any] :
+        return {}
+
+class RekoltConfig(RekoltConfigPrototype):
     DESTINATION = "destination"
 
-    def __init__(self, config: dict) -> None:
-        if (RekoltConfig.DESTINATION in config.keys()):
-            self.__destination = str(config[RekoltConfig.DESTINATION])
-            config.pop(RekoltConfig.DESTINATION)
-        else:
-            self.__destination = Rekolt.DESTINATION
+    BOUCLE = "boucle"
+
+    __DESCRIPTION = {
+        DESTINATION: Rekolt.DESTINATION,
+        BOUCLE: False
+    }
+
+    def __init__(self, config: dict[str, any]) -> None:
+        super().__init__(config)
         self.__config = config.copy()
 
+    def description(self) -> dict[str, any]:
+        return RekoltConfig.__DESCRIPTION
+
     def destination(self) -> str :
-        return self.__destination
+        return self._destination
     
+    def boucle(self) -> bool :
+        return self._boucle
+
     def modules(self) -> set[str] :
         return set(self.__config.keys())
     

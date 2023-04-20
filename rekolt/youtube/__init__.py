@@ -4,7 +4,7 @@ from ..convert import RekoltConvert
 from .config import RekoltYouTubeConfig
 
 from youtube_dl import YoutubeDL
-from threading import current_thread, Thread
+from threading import current_thread
 from multiprocessing.dummy import Pool
 import os, itertools
 
@@ -18,8 +18,8 @@ class RekoltYouTube(RekoltModule):
     __INFOS_STATUS_FINISHED = 'finished'
     __INFOS_FICHIER = 'filename'
 
-    def __init__(self) -> None:
-        super().__init__(RekoltYouTube.NOM, RekoltYouTubeConfig)
+    def __init__(self, config: RekoltConfig, modules: dict[str, RekoltModule]) -> None:
+        super().__init__(RekoltYouTube.NOM, RekoltYouTubeConfig, config, modules)
 
     def __options(self, destination: str) -> dict :
         return {
@@ -39,14 +39,14 @@ class RekoltYouTube(RekoltModule):
 
     def __telecharger(self, url: str, options: dict) -> None :
         url = str(url)
-        nom = self.nouveau_thread(url)
+        nom = self.nom_thread(url)
         current_thread().setName(nom)
         RekoltTerminal.afficher("Téléchargement depuis '" + url + "'...")
         try:
             dl = YoutubeDL(options)
-            thread = Thread(name=nom, target=dl.download, args=zip([url]))
+            thread = self.nouveau_thread(url, dl.download, [url])
             thread.start()
-            thread.join(self.config().timeout())
+            thread.join(self.config().delais())
             if (thread.is_alive()):
                 raise TimeoutError("Délais dépassé : " + url)
         except Exception as e:
@@ -56,13 +56,13 @@ class RekoltYouTube(RekoltModule):
         if (infos[RekoltYouTube.__INFOS_STATUS] == RekoltYouTube.__INFOS_STATUS_FINISHED):
             RekoltTerminal.afficher("Téléchargement terminé.")
             if (self.config().conversion()):
-                RekoltModule.modules()[RekoltConvert.NOM].convertir(infos[RekoltYouTube.__INFOS_FICHIER])
+                self.modules()[RekoltConvert.NOM].convertir(infos[RekoltYouTube.__INFOS_FICHIER])
 
-    def invoquer(self, config: RekoltConfig) -> None :
-        super().invoquer(config)
+    def invoquer(self) -> None :
+        super().invoquer()
         if (self.config().conversion()):
-            RekoltModule.modules()[RekoltConvert.NOM].debut_consommation()
-        options = self.__options(config.destination())
+            self.modules()[RekoltConvert.NOM].debut_consommation()
+        options = self.__options(self.config_globale().destination())
         pool = Pool(self.config().processus())
         options_iter = itertools.repeat(options)
         for url in self.config().urls():
@@ -72,7 +72,7 @@ class RekoltYouTube(RekoltModule):
         pool.join()
         RekoltTerminal.afficher("Travail terminé.")
         if (self.config().conversion()):
-            RekoltModule.modules()[RekoltConvert.NOM].fin_consommation()
+            self.modules()[RekoltConvert.NOM].fin_consommation()
 
     class __Logger:
         def debug(self, msg: str) -> None :
