@@ -47,9 +47,11 @@ class RekoltTorrent(RekoltModule):
             RekoltTerminal.afficher("Téléchargement du torrent '" + torrent + "' vers '" + destination + "'...")
         try:
             dl = TorrentDownloader(torrent, destination)
-            thread = Thread(name=nom, target=self.__telecharger, args=(dl))
+            thread = Thread(name=nom, target=self.__telechargement, args=[dl])
             thread.start()
             thread.join(self.config().timeout())
+            if (thread.is_alive()):
+                raise TimeoutError("Délais dépassé : " + torrent)
             RekoltTerminal.afficher("Téléchargement terminé.")
             if (not magnet and self.config().supprimer_sources()):
                 RekoltTerminal.afficher("Suppression du fichier torrent '" + torrent + "'...")

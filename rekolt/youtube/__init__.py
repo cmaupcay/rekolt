@@ -47,6 +47,8 @@ class RekoltYouTube(RekoltModule):
             thread = Thread(name=nom, target=dl.download, args=zip([url]))
             thread.start()
             thread.join(self.config().timeout())
+            if (thread.is_alive()):
+                raise TimeoutError("Délais dépassé : " + url)
         except Exception as e:
             RekoltTerminal.erreur(e)
 

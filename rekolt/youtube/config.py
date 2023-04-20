@@ -19,7 +19,7 @@ class RekoltYouTubeConfig:
     CONVERSION_PAR_DEFAUT = True
 
     TIMEOUT = "timeout"
-    TIMEOUT_PAR_DEFAUT = 1200;
+    TIMEOUT_PAR_DEFAUT = 1200.0;
 
     def __init__(self, config: RekoltConfig) -> None:
         self.__urls = set(config[RekoltYouTubeConfig.URLS])
@@ -51,7 +51,7 @@ class RekoltYouTubeConfig:
             self.__conversion = RekoltYouTubeConfig.CONVERSION_PAR_DEFAUT
         # TIMEOUT
         if (RekoltYouTubeConfig.TIMEOUT in params):
-            self.__timeout = int(config[RekoltYouTubeConfig.TIMEOUT])
+            self.__timeout = float(config[RekoltYouTubeConfig.TIMEOUT])
         else:
             self.__timeout = RekoltYouTubeConfig.TIMEOUT_PAR_DEFAUT
 
