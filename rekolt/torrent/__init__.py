@@ -4,8 +4,8 @@ from ..convert import RekoltConvert
 from ..utils import NoPrint
 from .config import RekoltTorrentConfig
 
-from torrentp import TorrentInfo, TorrentDownloader
-from threading import current_thread
+from torrentp import TorrentDownloader
+from threading import current_thread, Thread
 from multiprocessing.dummy import Pool
 import os, itertools
 
@@ -27,6 +27,13 @@ class RekoltTorrent(RekoltModule):
                     torrents.append(torrent)
         return torrents
 
+    def __telechargement(self, dl: TorrentDownloader) -> None :
+        if (self.config().progression()):
+            dl.start_download()
+        else:
+            with NoPrint():
+                dl.start_download()
+
     def __telecharger(self, torrent: str, destination: str) -> None :
         torrent = str(torrent)
         magnet = torrent.startswith(RekoltTorrent.__MAGNET)
@@ -40,11 +47,9 @@ class RekoltTorrent(RekoltModule):
             RekoltTerminal.afficher("Téléchargement du torrent '" + torrent + "' vers '" + destination + "'...")
         try:
             dl = TorrentDownloader(torrent, destination)
-            if (self.config().progression()):
-                dl.start_download()
-            else:
-                with NoPrint():
-                    dl.start_download()
+            thread = Thread(name=nom, target=self.__telecharger, args=zip(dl))
+            thread.start()
+            thread.join(self.config().timeout())
             RekoltTerminal.afficher("Téléchargement terminé.")
             if (not magnet and self.config().supprimer_sources()):
                 RekoltTerminal.afficher("Suppression du fichier torrent '" + torrent + "'...")
