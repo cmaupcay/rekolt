@@ -75,7 +75,6 @@ class RekoltConvert(RekoltModule):
     def invoquer(self) -> None :
         super().invoquer()
         self.__ciblage(self.config_globale().destination())
-        RekoltTerminal.afficher("Démarrage...")
         self.__destination = self.config_globale().destination() + os.path.sep + self.config().dossier() + os.path.sep
         while (self.__consommateurs > 0 or self.__en_attente.qsize() > 0):
             try:

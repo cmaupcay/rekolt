@@ -1,11 +1,11 @@
 from .app import Rekolt, RekoltApp, RekoltModule
 
 from .convert import RekoltConvert
-from .youtube import RekoltYouTube
+from .web import RekoltWeb
 from .torrent import RekoltTorrent
 
 __MODULES = [
-    RekoltYouTube,
+    RekoltWeb,
     RekoltTorrent,
     RekoltConvert
 ]

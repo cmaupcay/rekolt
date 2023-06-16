@@ -1,6 +1,6 @@
 from ..config import RekoltConfigPrototype
 
-class RekoltYouTubeConfig(RekoltConfigPrototype):
+class RekoltWebConfig(RekoltConfigPrototype):
     def __init__(self, config: dict[str, any]) -> None:
         super().__init__(config)
 
@@ -32,6 +32,10 @@ class RekoltYouTubeConfig(RekoltConfigPrototype):
     def delais(self) -> float :
         return self._delais
     
+    FICHIERS = "fichiers"
+    def fichiers(self) -> str :
+        return self._fichiers
+
     __DESCRIPTION = {
         URLS: set,
         DOSSIER: "",
@@ -39,8 +43,9 @@ class RekoltYouTubeConfig(RekoltConfigPrototype):
         PROCESSUS: 2,
         PROGRESSION: False,
         CONVERSION: True,
-        DELAIS: 7200.0
+        DELAIS: 7200.0,
+        FICHIERS: "%(title)s.%(ext)s"
     }
 
     def description(self) -> dict[str, any]:
-        return RekoltYouTubeConfig.__DESCRIPTION
+        return RekoltWebConfig.__DESCRIPTION

@@ -3,8 +3,8 @@
         "nom": "rekolt",
         "version": [
             0,
-            11,
-            1
+            12,
+            0
         ],
         "org": "tensaiji",
         "description": "Utilitaire de collecte automatique de ressources.",
@@ -58,7 +58,8 @@
                 ],
                 "install": [
                     [],
-                    "@-€{PYTHON_PIP} install --upgrade -r requirements.txt"
+                    "@-€{PYTHON_PIP} install --upgrade -r requirements.txt",
+                    "@-playwright install firefox"
                 ],
                 "maj.git": [
                     [],

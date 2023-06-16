@@ -43,6 +43,7 @@ clean.dest:
 
 install: 
 	@-pip install --upgrade -r requirements.txt
+	@-playwright install firefox
 .PHONY : install
 
 maj.git: 
