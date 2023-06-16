@@ -50,6 +50,10 @@ class RekoltConvertConfig(RekoltConfigPrototype):
     def supprimer_sources(self) -> bool :
         return self._supprimer_sources
     
+    ATTENTE = "attente"
+    def attente(self) -> float :
+        return self._attente
+    
     __DESCRIPTION = {
         CIBLE: "",
         IGNORE: {"part", "txt", "nfo", "torrent"},
@@ -59,7 +63,8 @@ class RekoltConvertConfig(RekoltConfigPrototype):
         TMP: ".",
         PROCESSUS: 8,
         PROGRESSION: False,
-        SUPPRIMER_SOURCES: True
+        SUPPRIMER_SOURCES: True,
+        ATTENTE: 5.0
     }
 
     def description(self) -> dict[str, any] :

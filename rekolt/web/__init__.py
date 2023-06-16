@@ -1,7 +1,7 @@
 from ..terminal import RekoltTerminal
 from ..modules import RekoltModule, RekoltConfig
 from ..convert import RekoltConvert
-from .domaines import DOMAINES
+from .domaines import DOMAINES, RekoltWebDomaine
 from .config import RekoltWebConfig
 
 from youtube_dl import YoutubeDL
@@ -10,10 +10,6 @@ from multiprocessing.dummy import Pool
 
 class RekoltWeb(RekoltModule):
     NOM = "web"
-
-    __INFOS_STATUS = 'status'
-    __INFOS_STATUS_FINISHED = 'finished'
-    __INFOS_FICHIER = 'filename'
 
     def __init__(self, config: RekoltConfig, modules: dict[str, RekoltModule]) -> None:
         super().__init__(RekoltWeb.NOM, RekoltWebConfig, config, modules)
@@ -32,11 +28,15 @@ class RekoltWeb(RekoltModule):
         except Exception as e:
             RekoltTerminal.erreur(e)
 
-    def __hook(self, infos: dict) -> None :
-        if (infos[RekoltWeb.__INFOS_STATUS] == RekoltWeb.__INFOS_STATUS_FINISHED):
-            RekoltTerminal.afficher("Téléchargement terminé.")
-            if (self.config().conversion()):
-                self.modules()[RekoltConvert.NOM].convertir(infos[RekoltWeb.__INFOS_FICHIER])
+    def __hook(self, domaine: RekoltWebDomaine) -> callable :
+        def _hook(infos: dict) -> None :
+            if (infos["status"] == "finished"):
+                RekoltTerminal.afficher("Téléchargement terminé.")
+                if (self.config().conversion()):
+                    fichier = domaine.conversion(infos)
+                    if (fichier != None):
+                        self.modules()[RekoltConvert.NOM].convertir(fichier)
+        return _hook
 
     def invoquer(self) -> None :
         super().invoquer()
@@ -47,7 +47,7 @@ class RekoltWeb(RekoltModule):
             nonSupporte = True
             for domaine in DOMAINES:
                 if (domaine.correspond(url)):
-                    domaine.telecharger(url, self.config(), self.config_globale().destination(), pool, self.__telecharger, self.__hook)
+                    domaine.telecharger(url, self.config(), self.config_globale().destination(), pool, self.__telecharger, self.__hook(domaine))
                     nonSupporte = False
                     break
             if (nonSupporte):

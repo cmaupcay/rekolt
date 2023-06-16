@@ -17,6 +17,9 @@ class RekoltWebDomaine:
     def correspond(self, url: str) -> bool :
         return urlparse(url).netloc in self.__domaines
 
+    def conversion(self, infos: dict) -> str | None :
+        return infos["filename"]
+
     __OPTION_HOOK = "progress_hooks"
 
     def options(self, config: RekoltWebConfig, destination: str) -> dict :

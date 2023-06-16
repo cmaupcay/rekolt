@@ -5,6 +5,7 @@ from .config import RekoltConvertConfig
 from moviepy.editor import VideoFileClip
 from queue import Queue, Empty
 import os
+import time
 
 class RekoltConvert(RekoltModule):
     NOM = "convert"
@@ -20,6 +21,12 @@ class RekoltConvert(RekoltModule):
         self.__destination = None
 
     def __convertir(self, source: str) -> None :
+        if (not os.path.isfile(source)):
+            RekoltTerminal.afficher("En attente du fichier '" + source + "'...")
+            time.sleep(self.config().attente())
+            if (not os.path.isfile(source)):
+                RekoltTerminal.erreur("Le fichier '" + source + "' n'existe pas.")
+                return
         self.__en_cours = source
         destination = os.path.splitext(os.path.basename(source))[0] + '.'
         tmp = self.__destination + self.config().tmp() + destination
@@ -58,11 +65,8 @@ class RekoltConvert(RekoltModule):
             if (os.path.isdir(cible)):
                 for fichier in os.listdir(cible):
                     self.convertir(cible + os.path.sep + fichier)
-            elif (os.path.isfile(cible)):
-                if (os.path.splitext(cible)[-1][1:] not in self.config().ignore()):
+            elif (os.path.splitext(cible)[-1][1:] not in self.config().ignore()):
                     self.__en_attente.put(cible)
-            else:
-                RekoltTerminal.erreur("Le fichier '" + cible + "' n'existe pas.")
 
     def __ciblage(self, dossier: str) -> None :
         if (len(self.config().cible()) > 0):
