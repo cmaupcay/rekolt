@@ -6,7 +6,7 @@ import time
 import os
 
 class RekoltWebArte(RekoltWebDomaine):
-    __IDS = ["VF-STF_XQ", "VOF_XQ"]
+    __IDS = ["VF-STF_XQ", "VOF_XQ", "VOF-STF_XQ"]
 
     def __init__(self) :
         super().__init__("arte", ("www.arte.tv"))
